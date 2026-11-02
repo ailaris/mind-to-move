@@ -27,7 +27,8 @@ export default function Footer() {
             . Recorded with BCI2000 (Schalk et al., 2004).
         </p>
         <p className="footer__small">
-          Mind to Move is a research and educational prototype exploring EEG-based
+          Mind to Move is a SynaptiX project for the Dana Foundation / NYAS BrainTech Innovation Challenge.
+          It is a research and educational prototype exploring EEG-based
           brain-computer interaction. It is not a clinically validated medical device
           and is not intended for diagnosis, treatment, or independent real-world
           assistive control.

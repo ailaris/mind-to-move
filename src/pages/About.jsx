@@ -146,8 +146,7 @@ export default function About() {
                 People with limited movement use eye-tracking computers, communication
                 devices, and caregiver help today. Mind to Move would sit next to these tools.
                 People with movement limitations, caregivers, and rehabilitation specialists
-                have not yet shaped this project. We plan to ask them what a system should do
-                when it is unsure.
+                have not yet shaped this project. 
             </p>
           </SectionHeading>
           <div className="grid-3">

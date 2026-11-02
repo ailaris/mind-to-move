@@ -1,0 +1,27 @@
+.roadmap { list-style: none; margin: 0; padding: 0; display: grid; gap: 3rem; }
+
+.stage { position: relative; padding-left: 2rem; border-left: 2px solid var(--border); }
+.stage::before {
+  content: ''; position: absolute; left: -9px; top: 0.3rem;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--bg-primary); border: 2px solid var(--accent-2);
+}
+.stage:first-child::before { background: var(--accent-2); }
+
+.stage__head { margin-bottom: 1.5rem; max-width: 680px; }
+.stage__tag {
+  color: var(--accent-2); font-size: 0.8rem; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+}
+.stage__title { font-size: clamp(1.4rem, 3vw, 1.9rem); margin: 0.4rem 0 0.6rem; }
+
+.card h4 { font-size: 1.1rem; margin: 0 0 0.6rem; }
+
+.question__num {
+  display: block; margin-bottom: 0.5rem;
+  color: var(--accent-2); font-size: 1.5rem; font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .stage { padding-left: 1.25rem; }
+}
