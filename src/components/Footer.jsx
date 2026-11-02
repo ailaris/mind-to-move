@@ -19,8 +19,12 @@ export default function Footer() {
         </div>
 
         <p className="footer__small">
-          Dataset: PhysioNet EEG Motor Movement/Imagery Dataset.
-          {/* TODO: добавить официальную цитату или ссылку на датасет */}
+            Dataset: Schalk, G. (2009). EEG Motor Movement/Imagery Dataset (version
+            1.0.0). PhysioNet.{' '}
+            <a href="https://doi.org/10.13026/C28G6P" target="_blank" rel="noreferrer" style={{ textDecoration: 'underline' }}>
+                doi.org/10.13026/C28G6P
+            </a>
+            . Recorded with BCI2000 (Schalk et al., 2004).
         </p>
         <p className="footer__small">
           Mind to Move is a research and educational prototype exploring EEG-based

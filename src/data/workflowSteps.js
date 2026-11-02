@@ -1,0 +1,135 @@
+export const stops = [
+  {
+    id: 'input',
+    kind: 'step',
+    number: 1,
+    short: 'EEG input',
+    title: 'EEG data input',
+    status: 'Completed',
+    summary:
+      'We start from prerecorded EEG of volunteers who imagined moving their left or right hand.',
+    details: [
+      'Source: PhysioNet EEG Motor Movement/Imagery Dataset, runs 4, 8 and 12.',
+      '109 participants and 4,918 labelled left- and right-hand imagery trials.',
+      'We use existing recordings and collect no new EEG from anyone.',
+      'We plan to test on a second public dataset, BCI Competition IV 2a, to check generalization.',
+    ],
+  },
+  {
+    id: 'security',
+    kind: 'layer',
+    title: 'Cybersecurity and privacy layer',
+    status: 'Future requirement',
+    summary:
+      'A protective layer surrounds the pipeline. These are requirements for a future system. We have not implemented or tested them.',
+    details: [
+      'Authorised access: only authorised people, such as researchers and mentors, should reach the data, through secure login and audit logs.',
+      'Data source security: processed data should stay restricted to authorised users after input.',
+      'Privacy protection: the system should collect and use left- and right-hand data and no other personal or biometric data.',
+      'Encryption: data should be encrypted in transit and at rest.',
+    ],
+    note: 'A confidence score cannot stop every security problem.',
+    cta: { href: '#privacy', label: 'Read the full privacy section' },
+  },
+  {
+    id: 'preprocessing',
+    kind: 'step',
+    number: 2,
+    short: 'Preprocessing',
+    title: 'Preprocessing',
+    status: 'Completed',
+    summary:
+      'We clean the recordings and cut them into two-second segments the model can compare.',
+    details: [
+      'A band-pass filter keeps activity between 8 and 30 Hz.',
+      'Epochs run from 1 to 3 seconds after each event marker.',
+      'Every recording ends at 128 Hz, giving 64 channels and 257 samples per epoch.',
+    ],
+    note: 'We applied no amplitude-based artifact rejection. Our checks for NaN and infinite values confirm structure and numbers. They do not show that the trials are free of artifacts.',
+  },
+  {
+    id: 'csp',
+    kind: 'step',
+    number: 3,
+    short: 'CSP',
+    title: 'Common Spatial Patterns (CSP)',
+    status: 'In development',
+    summary:
+      'CSP finds the scalp patterns that best separate left-hand from right-hand imagery.',
+    details: [
+      'CSP turns the filtered epochs into a small set of spatial features.',
+      'We fit CSP on training data inside each evaluation fold. This prevents data leakage.',
+    ],
+    why: 'Imagining a hand movement lowers power in the mu rhythm (about 8 to 12 Hz) over the motor cortex. The drop is usually strongest on the opposite side of the head. CSP picks up this difference. It does not read thoughts.',
+  },
+  {
+    id: 'classifier',
+    kind: 'step',
+    number: 4,
+    short: 'Classifier',
+    title: 'Classification',
+    status: 'In development',
+    summary: 'A classifier reads the CSP features and predicts LEFT or RIGHT.',
+    details: [
+      'LDA (Linear Discriminant Analysis) is our first classifier.',
+      'If time permits, we compare it with Logistic Regression and SVM (Support Vector Machine).',
+      'We evaluate on held-out data, aiming for participants the model never saw during training.',
+    ],
+  },
+  {
+    id: 'confidence',
+    kind: 'step',
+    number: 5,
+    short: 'Confidence',
+    title: 'Confidence estimation',
+    status: 'In development',
+    summary: 'Each prediction carries a probability that shows how sure the model is.',
+    details: [
+      'We calibrate the predicted probabilities on validation data.',
+      'Training, calibration and test data stay separate.',
+      'A high probability does not guarantee a correct prediction.',
+    ],
+  },
+  {
+    id: 'gate',
+    kind: 'step',
+    number: 6,
+    short: 'Decision gate',
+    title: 'MTM decision gate',
+    status: 'Simulated in demo',
+    summary:
+      'The gate compares each confidence value with two thresholds and picks one of three outcomes.',
+    details: [
+      'The gate holds a command back or asks for confirmation. It does not replace a prediction with a different action.',
+    ],
+    outcomes: [
+      { tone: 'success', rule: '98% or higher', label: 'Execute', text: 'The command runs and the arm moves.' },
+      {
+        tone: 'warning',
+        rule: '90% to below 98%',
+        label: 'Confirm',
+        text: 'The system asks the user to confirm. A yes runs the displayed command. A no, or no response, keeps the arm still.',
+      },
+      { tone: 'danger', rule: 'Below 90%', label: 'Reject', text: 'The command does not run and the arm stays still.' },
+    ],
+    note: 'These thresholds are experimental starting points, not established safety limits. We choose final values using validation data, never the test set.',
+  },
+  {
+    id: 'arm',
+    kind: 'step',
+    number: 7,
+    short: 'Virtual arm',
+    title: 'Virtual robotic arm',
+    status: 'Simulated in demo',
+    summary:
+      'An accepted command moves a virtual arm. A rejected or uncertain prediction leaves it still.',
+    details: [
+      'LEFT prediction: the arm moves left.',
+      'RIGHT prediction: the arm moves right.',
+      'Rejected or uncertain prediction: no movement.',
+      'We record accuracy, incorrect-command rate, command coverage, abstention rate and confirmation rate.',
+    ],
+    note: 'The arm is a conceptual demonstration. It does not establish real-world safety, usability or clinical effectiveness.',
+    cta: { to: '/demo', label: 'Try it in the demo' },
+  },
+]
