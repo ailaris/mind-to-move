@@ -43,6 +43,15 @@ export default function Demo() {
             command or the user declines one, and the model does not predict rest.
           </p>
         </div>
+
+        <div className="card demo__note">
+          <h3>How confirmation works here</h3>
+          <p>
+            In this demo you confirm a command with a click. A person with limited hand
+            movement may need a different input, such as a switch or a blink. We do not
+            know yet which input works best. We plan to ask the people who would use it.
+          </p>
+        </div>
       </div>
     </section>
   )

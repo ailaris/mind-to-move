@@ -56,7 +56,7 @@ export const safetyPoints = [
   },
   {
     title: 'Confirmation uses a separate channel',
-    text: 'A button, a blink or a switch should confirm commands, because the same decoder could misread a yes.',
+    text: 'A button, a blink or a switch should confirm commands, because the same decoder could misread a yes. Which input works best for each user is an open question.',
   },
   {
     title: 'Messages stay kind',

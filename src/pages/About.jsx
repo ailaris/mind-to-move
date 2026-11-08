@@ -7,6 +7,7 @@ import InteractiveWorkflow from '../components/InteractiveWorkflow'
 import workflow from '../assets/workflow.jpeg'
 import ResultsSection from '../components/ResultsSection'
 import GateScale from '../components/GateScale'
+import Perspectives from '../components/Perspectives'
 
 // When you have the photo: save it in src/assets/, import it, and assign it here.
 // import teamWorking from '../assets/team-working.jpg'
@@ -296,13 +297,7 @@ export default function About() {
       </section>
       <ResultsSection />
       {/* ---------- G. EXPERTS ---------- */}
-      <section className="section">
-        <div className="container">
-          <SectionHeading label="Voices" title="Perspectives from Experts" />
-          {/* TODO: показывать карточки только с реальными интервью */}
-          <div className="placeholder">Expert insights will be added here</div>
-        </div>
-      </section>
+      <Perspectives />
 
       {/* ---------- H. PRIVACY ---------- */}
       <section className="section" id="privacy">
