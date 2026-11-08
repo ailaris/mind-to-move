@@ -10,6 +10,31 @@
 .hero__sub { margin: 1.25rem 0 2rem; font-size: 1.1rem; max-width: 560px; }
 .hero__buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
 
+/* ---------- Why section ---------- */
+.why {
+  display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: 3rem; align-items: start;
+}
+.why__side { position: sticky; top: 88px; }
+
+.motivation {
+  display: grid; grid-template-columns: 300px 1fr; gap: 1.75rem;
+  align-items: center; margin-top: 2rem;
+}
+.motivation:hover { transform: none; border-color: var(--border); }
+.motivation__media img, .motivation__empty {
+  display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 12px;
+}
+.motivation__empty {
+  display: grid; place-items: center;
+  border: 1px dashed var(--border); color: var(--text-muted);
+}
+
+.motivation--text { display: block; }
+@media (max-width: 900px) {
+  .why, .motivation { grid-template-columns: 1fr; }
+  .why__side { position: static; }
+}
 
 .hero__logo {
   width: 100%;

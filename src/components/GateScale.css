@@ -1,0 +1,40 @@
+.gate { margin: 0; }
+.gate:hover { transform: none; border-color: var(--border); }
+.gate__title { font-weight: 600; font-size: 1.05rem; margin-bottom: 0.5rem; }
+
+.gate__chart { position: relative; height: 104px; margin-top: 0.5rem; }
+.gate__bar {
+  position: absolute; top: 40px; left: 0; right: 0; height: 24px;
+  display: flex; border-radius: 6px; overflow: hidden;
+}
+.gate__zone { display: block; height: 100%; }
+.gate__zone--reject { background: color-mix(in srgb, var(--danger, #f87171) 55%, transparent); }
+.gate__zone--confirm { background: color-mix(in srgb, var(--warning) 70%, transparent); }
+.gate__zone--execute { background: color-mix(in srgb, var(--success) 75%, transparent); }
+
+.gate__marker {
+  position: absolute; top: 24px; height: 48px; width: 2px;
+  background: var(--text); transform: translateX(-1px);
+}
+.gate__marker-label {
+  position: absolute; bottom: 100%; right: -2px; margin-bottom: 4px;
+  white-space: nowrap; font-size: 0.8rem; font-weight: 600; color: var(--text);
+}
+
+.gate__ticks span {
+  position: absolute; top: 76px; transform: translateX(-50%);
+  font-size: 0.78rem; color: var(--text-muted);
+}
+.gate__ticks span:first-child { transform: none; }
+
+.gate__axis { text-align: center; font-size: 0.8rem; margin-top: 0.25rem; }
+
+.gate__legend { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; gap: 0.5rem; }
+.gate__legend li { color: var(--text-muted); font-size: 0.92rem; line-height: 1.5; }
+.gate__legend b { color: var(--text); margin-right: 0.35rem; }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 0.55rem; }
+.dot--reject { background: var(--danger, #f87171); }
+.dot--confirm { background: var(--warning); }
+.dot--execute { background: var(--success); }
+
+.gate__note { font-size: 0.82rem; margin-top: 1rem; }

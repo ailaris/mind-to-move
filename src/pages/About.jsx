@@ -6,7 +6,11 @@ import './About.css'
 import InteractiveWorkflow from '../components/InteractiveWorkflow'
 import workflow from '../assets/workflow.jpeg'
 import ResultsSection from '../components/ResultsSection'
+import GateScale from '../components/GateScale'
 
+// When you have the photo: save it in src/assets/, import it, and assign it here.
+// import teamWorking from '../assets/team-working.jpg'
+const motivationPhoto = null
 const stats = [
   { value: '109', label: 'Participants' },
   { value: '4,918', label: 'EEG epochs' },
@@ -83,51 +87,64 @@ export default function About() {
       {/* ---------- C. PROBLEM & MOTIVATION ---------- */}
       <section className="section">
         <div className="container">
-          <SectionHeading label="Why" title="When should a system choose not to act?">
-            <p>
+          <div className="why">
+            <SectionHeading label="Why" title="When should a system choose not to act?">
+              <p>
                 Brain-computer interfaces use patterns of brain activity to interpret a
                 person's intended movement. However, EEG signals are naturally noisy and
                 can vary considerably between individuals. As a result, machine-learning
                 models may sometimes misinterpret an imagined movement and produce an
                 incorrect command.
-            </p>
-
-            <p style={{ marginTop: '1rem' }}>
+              </p>
+              <p style={{ marginTop: '1rem' }}>
                 In assistive technology, an incorrect command can be more problematic
                 than receiving no command at all. A robotic device that acts on every
                 prediction could respond when the user's actual intention is unclear.
-            </p>
-
-            <p style={{ marginTop: '1rem' }}>
-                Mind to Move introduces a confidence-aware approach. 
-                Instead of automatically executing every prediction, 
-                the system evaluates the model's confidence before allowing 
-                an action. Depending on the prediction's confidence, it can 
-                execute the command, request confirmation, or reject it. We 
-                aim to investigate whether this approach can reduce incorrect 
-                robotic commands compared with a system that accepts every prediction.
-            </p>
-
-            <p style={{ marginTop: '1.5rem', fontWeight: 600 }}>
-                Our research question:
-            </p>
-
-            <p>
+              </p>
+              <p style={{ marginTop: '1rem' }}>
+                Mind to Move introduces a confidence-aware approach. Instead of
+                automatically executing every prediction, the system evaluates the
+                model's confidence before allowing an action. Depending on the
+                prediction's confidence, it can execute the command, request
+                confirmation, or reject it. We aim to investigate whether this approach
+                can reduce incorrect robotic commands compared with a system that
+                accepts every prediction.
+              </p>
+              <p style={{ marginTop: '1rem' }}>
+                Our first results show the gate in action. It blocked every wrong command
+                in our test and also held back nearly all correct ones. See the{' '}
+                <a href="#results" style={{ textDecoration: 'underline' }}>Results</a> section.
+              </p>
+              <p style={{ marginTop: '1.5rem', fontWeight: 600 }}>Our research question:</p>
+              <p>
                 Can allowing an EEG-based system to reject uncertain predictions reduce
                 incorrect robotic commands?
-            </p>
-        </SectionHeading>
-          <div className="card">
-            <h3>Our motivation</h3>
-            <p>
-              We chose this direction after comparing several BrainTech ideas. 
-              A motor imagery BCI offered a focused research question that we 
-              could investigate using publicly available EEG recordings and a 
-              virtual demonstration, without collecting neural data or building 
-              physical hardware. We narrowed our concept to two imagined movements 
-              and one important challenge: determining when a prediction is reliable 
-              enough to trigger an action.
-            </p>
+              </p>
+            </SectionHeading>
+
+            <aside className="why__side">
+              <GateScale />
+            </aside>
+          </div>
+
+          <div className={`card motivation ${motivationPhoto ? '' : 'motivation--text'}`}>
+            {motivationPhoto && (
+              <div className="motivation__media">
+                <img src={motivationPhoto} alt="Team members discussing the project on a video call" />
+              </div>
+            )}
+            <div>
+              <h3>Our motivation</h3>
+              <p>
+                We chose this direction after comparing several BrainTech ideas. A
+                motor imagery BCI offered a focused research question that we could
+                investigate using publicly available EEG recordings and a virtual
+                demonstration, without collecting neural data or building physical
+                hardware. We narrowed our concept to two imagined movements and one
+                important challenge: determining when a prediction is reliable enough to
+                trigger an action.
+              </p>
+            </div>
           </div>
         </div>
       </section>
