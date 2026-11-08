@@ -1,0 +1,564 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MTM Arm 3D</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<style>
+  :root {
+    --bg: #070c24; --card: #0f1738; --card2: #131d45; --fg: #eaf0ff; --muted: #97a3c9; --line: #232f5e;
+    --accent: #6a7cff; --teal: #2fe0a8; --amber: #ffb020; --grey: #8c96b8; --red: #ff6b6b;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  h1 { display: none; }
+  [hidden] { display: none !important; }
+  body { margin: 0; background: transparent; color: var(--fg); font-family: Inter, system-ui, sans-serif; font-size: 14px; line-height: 1.5; padding: 20px 16px; }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+  h1 { font-size: clamp(1.3rem, 3.5vw, 1.75rem); margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 14px; }
+  .sim { border: 1px solid #6b4a10; background: #1d1608; color: #ffd38a; border-radius: 10px; padding: 10px 14px; margin: 0 0 14px; font-size: .86rem; }
+  .sim b { color: var(--amber); }
+  .layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 14px; align-items: start; }
+  @media (max-width: 860px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+  .card h2 { font-size: 1rem; margin: 0 0 10px; }
+  .cue { border: 1px dashed var(--line); border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; }
+  .cue small { color: var(--muted); display: block; }
+  .cue strong { font-size: 1.25rem; }
+  button { font: inherit; color: var(--fg); background: var(--card2); border: 1px solid var(--line); border-radius: 99px; padding: 7px 14px; cursor: pointer; }
+  button:hover:not(:disabled) { border-color: var(--accent); }
+  button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  button.light { background: #eef1ff; color: #14204f; border-color: #eef1ff; }
+  button:disabled { opacity: .4; cursor: default; }
+  button[aria-pressed="true"] { border-color: var(--teal); color: var(--teal); }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .toggle { display: flex; align-items: center; gap: 10px; margin: 12px 0 4px; font-weight: 600; cursor: pointer; }
+  .toggle input { appearance: none; width: 44px; height: 24px; border-radius: 99px; background: #39457a; position: relative; cursor: pointer; flex: none; transition: background .15s; }
+  .toggle input::after { content: ''; position: absolute; left: 3px; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform .15s; }
+  .toggle input:checked { background: var(--teal); }
+  .toggle input:checked::after { transform: translateX(20px); }
+  .help { color: var(--muted); font-size: .8rem; margin: 0 0 10px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 6px; }
+  .stat { background: var(--card2); border: 1px solid var(--line); border-radius: 10px; padding: 8px 4px; text-align: center; }
+  .stat b { display: block; font-size: 1.35rem; color: var(--teal); line-height: 1.1; }
+  .stat span { font-size: .72rem; color: var(--muted); }
+  .stat.bad b { color: var(--red); }
+  .stage { position: relative; height: clamp(340px, 62vw, 520px); border-radius: 12px; overflow: hidden; border: 1px solid var(--line);
+    background: radial-gradient(circle at 50% 35%, #16205a, #080d2a 70%); }
+  #view { position: absolute; inset: 0; }
+  #view canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+  #view canvas:active { cursor: grabbing; }
+  .nogl { padding: 24px; color: var(--muted); }
+  .tools { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; flex-wrap: wrap; gap: 6px; z-index: 2; }
+  .tools button { padding: 4px 11px; font-size: .78rem; background: rgba(15, 23, 56, .85); }
+  .hint { position: absolute; left: 12px; bottom: 8px; font-size: .74rem; color: var(--muted); pointer-events: none; z-index: 2; }
+  .cap { position: absolute; right: 12px; bottom: 8px; font-size: .74rem; color: var(--muted); pointer-events: none; z-index: 2; }
+  .tag { position: absolute; left: 0; top: 0; margin: -11px 0 0 14px; white-space: nowrap; font-size: .7rem; background: rgba(15, 23, 56, .92);
+    border: 1px solid var(--line); padding: 1px 8px; border-radius: 99px; pointer-events: none; display: none; z-index: 1; }
+  .tag::before { content: ''; position: absolute; left: -16px; top: 50%; width: 8px; height: 8px; border-radius: 50%; background: var(--teal); transform: translateY(-50%); }
+  .table { margin-top: 12px; }
+  .tr { display: grid; grid-template-columns: 170px 1fr; gap: 10px; padding: 8px 4px; border-bottom: 1px solid var(--line); }
+  .tr:last-child { border-bottom: 0; }
+  .tr span:first-child { color: var(--muted); }
+  .tr b { font-weight: 600; }
+  .pill { font-size: .68rem; border: 1px solid var(--line); border-radius: 99px; padding: 1px 8px; margin-left: 6px; color: var(--muted); font-weight: 400; }
+  .pill.ok { color: var(--teal); border-color: var(--teal); }
+  .pill.bad { color: var(--red); border-color: var(--red); }
+  .zones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+  .zone { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; color: var(--muted); font-size: .8rem; }
+  .zone b { display: block; color: var(--muted); }
+  .zone.on { border-color: var(--teal); background: #0b2a2a; color: var(--fg); }
+  .zone.on b { color: var(--teal); }
+  .zone.on.confirm { border-color: var(--amber); background: #2a2008; } .zone.on.confirm b { color: var(--amber); }
+  .zone.on.reject { border-color: var(--grey); background: #1a2040; } .zone.on.reject b { color: var(--grey); }
+  .tabs { display: flex; gap: 8px; margin: 0 0 14px; }
+  .tab { padding: 8px 20px; font-weight: 600; }
+  .tab[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .steps { margin: 0 0 12px; padding: 0; list-style: none; }
+  .steps li { padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 6px; color: var(--muted); font-size: .86rem; }
+  .steps li.on { border-color: var(--teal); color: var(--fg); background: #0b2a2a; }
+  .steps li b { color: var(--teal); margin-right: 6px; }
+  .fine { color: var(--muted); font-size: .76rem; margin: 8px 0 0; }
+  input[type=range] { width: 100%; accent-color: var(--teal); }
+  .lbl { font-size: .82rem; color: var(--muted); display: block; margin-top: 4px; }
+  @media (max-width: 560px) { .tr { grid-template-columns: 1fr; gap: 0; } .zones { grid-template-columns: 1fr; } }
+</style>
+
+<div class="wrap">
+  <h1>Mind to Move: virtual robotic arm</h1>
+  <p class="sub">Drag to rotate, scroll or pinch to zoom. The arm swings left or right only after the confidence gate lets a command through.</p>
+  <div class="tabs" role="tablist" aria-label="Page sections">
+    <button class="tab" role="tab" id="tabDemo" aria-selected="true">Demo</button>
+    <button class="tab" role="tab" id="tabFuture" aria-selected="false">Future</button>
+  </div>
+  <div class="sim" id="simBanner"><b>Simulation mode.</b> The trials below are illustrative examples. They are not live EEG and not real model predictions, and the confidence values say nothing about our model's accuracy.</div>
+
+  <div class="sim" id="futBanner" hidden><b>Future concept.</b> This part of the page is an idea for later. It is not built, not tested, and not driven by EEG.</div>
+
+  <div class="layout">
+    <div class="card" id="demoCard">
+      <h2>Trial</h2>
+      <div class="cue"><small>The volunteer is asked to imagine</small><strong id="cue">Press Run next trial</strong></div>
+      <div class="row">
+        <button class="primary" id="run">Run next trial</button>
+        <button class="light" id="reset">Reset</button>
+      </div>
+      <div class="row" id="confirmRow" hidden>
+        <button id="yes">Confirm move</button>
+        <button id="no">Cancel</button>
+      </div>
+      <label class="toggle"><input type="checkbox" id="gate" checked><span id="gateTxt">Confidence gate on</span></label>
+      <p class="help" id="gateHelp">The gate checks confidence before the arm moves.</p>
+      <div class="stats">
+        <div class="stat"><b id="sRun">0</b><span>Trials run</span></div>
+        <div class="stat"><b id="sMoved">0</b><span>Arm moved</span></div>
+        <div class="stat bad"><b id="sWrong">0</b><span>Wrong moves</span></div>
+      </div>
+      <p class="help">A wrong move means the arm swung opposite to what the volunteer was asked to imagine.</p>
+
+      <h2 style="margin-top:16px">Try your own command</h2>
+      <div class="row">
+        <button id="dL" aria-pressed="true">LEFT</button>
+        <button id="dR" aria-pressed="false">RIGHT</button>
+      </div>
+      <label class="lbl" for="conf">Confidence: <strong id="confv">99%</strong></label>
+      <input id="conf" type="range" min="50" max="100" value="99">
+      <div class="row" style="margin-top:10px"><button id="send">Send command</button></div>
+    </div>
+
+    <div class="card" id="futureCard" hidden>
+      <h2>Future: reach and grasp</h2>
+      <p class="help">Today the arm only swings left and right. A later version could also bend at the shoulder, elbow, and wrist, and close its fingers around an object.</p>
+      <ol class="steps" id="steps">
+        <li><b>1</b>Arm starts straight, hand open</li>
+        <li><b>2</b>Turns toward the ball (left or right)</li>
+        <li><b>3</b>Bends down at the elbow to reach it</li>
+        <li><b>4</b>Finger joints bend and close around the ball</li>
+        <li><b>5</b>Lifts the ball</li>
+      </ol>
+      <div class="row" role="group" aria-label="Ball side">
+        <button id="sideL" aria-pressed="false">Ball on left</button>
+        <button id="sideR" aria-pressed="true">Ball on right</button>
+      </div>
+      <div class="row">
+        <button class="primary" id="play">Pause</button>
+        <button class="light" id="replay">Replay</button>
+      </div>
+      <label class="lbl" for="scrub">Scrub through the motion</label>
+      <input id="scrub" type="range" min="0" max="1200" value="0">
+      <p class="fine">Concept animation only. Drag to look at it from any angle.</p>
+    </div>
+
+    <div>
+      <div class="stage" id="stage">
+        <div id="view"></div>
+        <div class="tools" role="group" aria-label="Camera views">
+          <button data-view="iso" aria-pressed="true">3/4 view</button>
+          <button data-view="sketch" aria-pressed="false">Sketch view</button>
+          <button data-view="front" aria-pressed="false">Front</button>
+          <button data-view="top" aria-pressed="false">Top</button>
+          <button id="lbl" aria-pressed="true">Labels</button>
+        </div>
+        <div class="hint">Drag to rotate &middot; scroll or pinch to zoom &middot; double-click to reset</div>
+        <div class="cap">Virtual robotic arm (illustration)</div>
+      </div>
+
+      <div class="card table" id="tableCard">
+        <div class="tr"><span>Volunteer was asked to imagine</span><b id="tCue">-</b></div>
+        <div class="tr"><span>Model prediction</span><b id="tPred">-</b></div>
+        <div class="tr"><span>Confidence</span><b id="tConf">-</b></div>
+        <div class="tr"><span>Gate decision</span><b id="tGate">-</b></div>
+        <div class="tr"><span>Virtual arm</span><b id="tArm">-</b></div>
+        <div class="zones">
+          <div class="zone reject" id="zr"><b>Reject</b>below 91%</div>
+          <div class="zone confirm" id="zc"><b>Confirm</b>91% to below 98%</div>
+          <div class="zone" id="ze"><b>Execute</b>98% or higher</div>
+        </div>
+        <p class="fine">Thresholds are experimental starting points, not established safety limits.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var view = $('view'), stage = $('stage');
+  var renderer;
+  try {
+    if (typeof THREE === 'undefined') throw new Error('no three');
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  } catch (e) {
+    view.innerHTML = '<p class="nogl">The 3D view needs WebGL, which this browser blocked or could not load. Try another browser.</p>';
+  }
+  function rad(d) { return d * Math.PI / 180; }
+  var V3 = (typeof THREE !== 'undefined') ? THREE.Vector3 : null;
+
+  // ---- gate logic (works even without WebGL) ----
+  var REJECT = 0.91, EXEC = 0.98, SWING = rad(40);
+  var st = { run: 0, moved: 0, wrong: 0 }, state = 'ready', yaw = 0, yawTarget = 0, pending = null, dir = 'L';
+  var ledHex = { ready: 0x6a7cff, run: 0x2fe0a8, confirm: 0xffb020, hold: 0x8c96b8 };
+  var ringMat = null;
+  function nm(d) { return d === 'L' ? 'LEFT hand' : 'RIGHT hand'; }
+  function setLed(s) { state = s; if (ringMat) ringMat.emissive.setHex(ledHex[s]); }
+  function zone(c) { return c >= EXEC ? 'e' : (c >= REJECT ? 'c' : 'r'); }
+  function showZones(c) {
+    var z = c == null ? '' : zone(c);
+    $('zr').className = 'zone reject' + (z === 'r' ? ' on' : '');
+    $('zc').className = 'zone confirm' + (z === 'c' ? ' on' : '');
+    $('ze').className = 'zone' + (z === 'e' ? ' on' : '');
+  }
+  function stats() { $('sRun').textContent = st.run; $('sMoved').textContent = st.moved; $('sWrong').textContent = st.wrong; }
+  function pill(t, cls) { return '<span class="pill ' + cls + '">' + t + '</span>'; }
+  var cur = null;
+  function moveArm(cmd, via) {
+    cur.armMoved = true; st.moved++;
+    var wrong = cur.cue && cmd !== cur.cue;
+    if (wrong) st.wrong++;
+    yawTarget = (cmd === 'L' ? -1 : 1) * SWING;
+    setLed('run'); stats();
+    $('tArm').textContent = 'Moving ' + (cmd === 'L' ? 'left' : 'right') + (via ? ' (' + via + ')' : '');
+    cur.cmd = cmd;
+  }
+  function hold(why) {
+    yawTarget = 0; setLed('hold');
+    $('tArm').textContent = why;
+  }
+  function evaluate(cue, pred, conf, real) {
+    st.run++; pending = null; $('confirmRow').hidden = true;
+    cur = { cue: cue, pred: pred, conf: conf, armMoved: false };
+    yawTarget = 0;
+    var pct = Math.round(conf * 1000) / 10;
+    $('cue').textContent = cue ? nm(cue) : 'Custom command';
+    $('tCue').textContent = cue ? nm(cue) : 'Custom command';
+    $('tPred').innerHTML = nm(pred) + (cue ? (pred === cue ? pill('matches the cue', 'ok') : pill('does not match the cue', 'bad')) : '');
+    $('tConf').innerHTML = pct + '%' + pill(real ? 'recorded model output' : 'example value', '');
+    var gateOn = $('gate').checked;
+    showZones(gateOn ? conf : null);
+    if (!gateOn) {
+      $('tGate').textContent = 'Gate off: the command goes straight to the arm';
+      moveArm(pred, 'no gate');
+    } else {
+      var z = zone(conf);
+      if (z === 'e') { $('tGate').textContent = 'Execute: the command is accepted'; moveArm(pred); }
+      else if (z === 'c') {
+        pending = pred; setLed('confirm');
+        $('tGate').textContent = 'Confirm: not sure, asking for a confirmation';
+        $('tArm').textContent = 'Waiting for confirm'; $('confirmRow').hidden = false;
+      } else { $('tGate').textContent = 'Reject: too uncertain, command blocked'; hold('Stayed still'); }
+    }
+    stats();
+  }
+  var realTrials = null, realIdx = 0;
+  function loadReal() {
+    fetch('predictions.json').then(function (r) { if (!r.ok) throw new Error('missing'); return r.json(); }).then(function (d) {
+      var t = d.trials.slice(), seed = 12345;
+      function rnd() { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
+      for (var i = t.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)); var x = t[i]; t[i] = t[j]; t[j] = x; }
+      realTrials = t;
+      $('simBanner').innerHTML = '<b>Recorded model output.</b> Each trial is a real prediction on held-out EEG from participants the model never saw during training. We replay them in random order. The model is not confident enough for the gate to pass most commands, so the arm rarely moves. The box <i>Try your own command</i> is an illustration with a confidence value you choose.';
+    }).catch(function () {});
+  }
+  loadReal();
+  function genTrial() {
+    if (realTrials) {
+      var t = realTrials[realIdx % realTrials.length]; realIdx++;
+      evaluate(t.actual_label === 'LEFT' ? 'L' : 'R', t.predicted_label === 'LEFT' ? 'L' : 'R', t.confidence, true);
+      return;
+    }
+    var cue = Math.random() < 0.5 ? 'L' : 'R', r = Math.random(), conf, p;
+    if (r < 0.45) { conf = 0.98 + Math.random() * 0.019; p = 0.97; }
+    else if (r < 0.75) { conf = 0.90 + Math.random() * 0.079; p = 0.80; }
+    else { conf = 0.55 + Math.random() * 0.34; p = 0.55; }
+    var pred = Math.random() < p ? cue : (cue === 'L' ? 'R' : 'L');
+    evaluate(cue, pred, conf);
+  }
+  $('run').addEventListener('click', genTrial);
+  $('reset').addEventListener('click', function () {
+    st = { run: 0, moved: 0, wrong: 0 }; stats(); pending = null; cur = null; $('confirmRow').hidden = true; yawTarget = 0; setLed('ready');
+    $('cue').textContent = 'Press Run next trial';
+    ['tCue', 'tPred', 'tConf', 'tGate', 'tArm'].forEach(function (i) { $(i).textContent = '-'; }); showZones(null);
+  });
+  $('yes').addEventListener('click', function () { if (!pending) return; var d = pending; pending = null; $('confirmRow').hidden = true; moveArm(d, 'confirmed'); });
+  $('no').addEventListener('click', function () { if (!pending) return; pending = null; $('confirmRow').hidden = true; hold('Stayed still (cancelled)'); });
+  $('gate').addEventListener('change', function () {
+    var on = $('gate').checked;
+    $('gateTxt').textContent = on ? 'Confidence gate on' : 'Confidence gate off';
+    $('gateHelp').textContent = on ? 'The gate checks confidence before the arm moves.' : 'Every prediction goes straight to the arm, even uncertain ones.';
+  });
+  function setDir(d) { dir = d; $('dL').setAttribute('aria-pressed', d === 'L'); $('dR').setAttribute('aria-pressed', d === 'R'); }
+  $('dL').addEventListener('click', function () { setDir('L'); });
+  $('dR').addEventListener('click', function () { setDir('R'); });
+  $('conf').addEventListener('input', function () { $('confv').textContent = $('conf').value + '%'; });
+  $('send').addEventListener('click', function () { evaluate(null, dir, parseInt($('conf').value, 10) / 100); });
+  document.querySelectorAll('.tools').forEach(function () {});
+  setLed('ready'); stats();
+
+  var mode = 'demo', fT = 0, playing = true, DUR = 12, side = 1;
+  function syncPlay() { $('play').textContent = playing ? 'Pause' : 'Play'; }
+  function setMode(m) {
+    mode = m;
+    $('tabDemo').setAttribute('aria-selected', m === 'demo'); $('tabFuture').setAttribute('aria-selected', m === 'future');
+    $('demoCard').hidden = m !== 'demo'; $('tableCard').hidden = m !== 'demo'; $('simBanner').hidden = m !== 'demo';
+    $('futureCard').hidden = m !== 'future'; $('futBanner').hidden = m !== 'future';
+    if (m === 'future') { fT = 0; playing = true; syncPlay(); }
+    onMode(m);
+  }
+  $('tabDemo').addEventListener('click', function () { setMode('demo'); });
+  $('tabFuture').addEventListener('click', function () { setMode('future'); });
+  $('play').addEventListener('click', function () { if (fT >= DUR) fT = 0; playing = !playing; syncPlay(); });
+  $('replay').addEventListener('click', function () { fT = 0; playing = true; syncPlay(); });
+  $('scrub').addEventListener('input', function () { fT = parseInt($('scrub').value, 10) / 100; playing = false; syncPlay(); });
+  function setSide(d) { side = d; $('sideL').setAttribute('aria-pressed', d < 0); $('sideR').setAttribute('aria-pressed', d > 0); if (renderer) computeBall(); fT = 0; playing = true; syncPlay(); }
+  $('sideL').addEventListener('click', function () { setSide(-1); });
+  $('sideR').addEventListener('click', function () { setSide(1); });
+  function onMode(m) { if (!renderer) return; setView(m === 'future' ? 'sketch' : 'iso'); }
+
+  if (!renderer) return;
+
+  // ---- scene ----
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(36, 1, 0.1, 100);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  view.appendChild(renderer.domElement);
+  var cv = renderer.domElement;
+  cv.tabIndex = 0;
+  cv.setAttribute('aria-label', '3D model of the robotic arm. Drag to rotate, scroll or pinch to zoom, arrow keys to rotate, plus and minus to zoom.');
+
+  scene.add(new THREE.HemisphereLight(0xdbe4ff, 0x20284f, 0.8));
+  var sun = new THREE.DirectionalLight(0xffffff, 0.95);
+  sun.position.set(5, 12, 9); sun.castShadow = true;
+  sun.shadow.mapSize.set(1024, 1024);
+  ['left', 'bottom'].forEach(function (k) { sun.shadow.camera[k] = -10; });
+  ['right', 'top'].forEach(function (k) { sun.shadow.camera[k] = 10; });
+  sun.shadow.camera.near = 1; sun.shadow.camera.far = 40; sun.shadow.bias = -0.0006;
+  scene.add(sun);
+  var rim = new THREE.DirectionalLight(0x7f8fff, 0.35); rim.position.set(-8, 5, -6); scene.add(rim);
+
+  function M(c, r, m) { return new THREE.MeshStandardMaterial({ color: c, roughness: r, metalness: m }); }
+  var grey = M(0xb9bec8, 0.55, 0.25), dark = M(0x3a404d, 0.5, 0.3), joint = M(0x8f96a6, 0.4, 0.4), skin = M(0xc6cad3, 0.5, 0.2),
+      baseM = M(0xa4abb8, 0.5, 0.3), teal = M(0x2fe0a8, 0.4, 0.2);
+  function mesh(g, mat, x, y, z) { var m = new THREE.Mesh(g, mat); m.position.set(x || 0, y || 0, z || 0); m.castShadow = true; m.receiveShadow = true; return m; }
+  function limb(a, b, r, mat) {
+    var d = new V3().subVectors(b, a), len = d.length();
+    var m = mesh(new THREE.CylinderGeometry(r, r, len, 36), mat);
+    m.position.copy(a).add(b).multiplyScalar(0.5);
+    m.quaternion.setFromUnitVectors(new V3(0, 1, 0), d.normalize());
+    return m;
+  }
+  function ball(r, p, mat) { return mesh(new THREE.SphereGeometry(r, 32, 24), mat, p.x, p.y, p.z); }
+
+  // floor with swing arc
+  var floor = mesh(new THREE.CylinderGeometry(9, 9, 0.2, 80), M(0x0e1535, 0.9, 0), 0, -0.1, 1.5);
+  floor.castShadow = false; scene.add(floor);
+  var arcMat = new THREE.LineBasicMaterial({ color: 0x3b4a8f });
+  var pts = [];
+  for (var i = -50; i <= 50; i += 2) pts.push(new V3(Math.sin(rad(i)) * 6.4, 0.02, Math.cos(rad(i)) * 6.4));
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), arcMat));
+  function floorLabel(text, deg) {
+    var c = document.createElement('canvas'); c.width = 256; c.height = 64;
+    var g = c.getContext('2d'); g.fillStyle = '#97a3c9'; g.font = '700 34px Inter, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(text, 128, 32);
+    var s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false }));
+    s.scale.set(2.2, 0.55, 1); s.position.set(Math.sin(rad(deg)) * 7.3, 0.25, Math.cos(rad(deg)) * 7.3);
+    scene.add(s);
+    var tp = [new V3(Math.sin(rad(deg)) * 0, 0.02, 0), new V3(Math.sin(rad(deg)) * 6.4, 0.02, Math.cos(rad(deg)) * 6.4)];
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(tp), new THREE.LineDashedMaterial({ color: 0x2c386f })));
+  }
+  floorLabel('LEFT', -40); floorLabel('STILL', 0); floorLabel('RIGHT', 40);
+
+  // base
+  var base = new THREE.Group(); scene.add(base);
+  var baseBody = mesh(new THREE.CylinderGeometry(1.7, 1.85, 0.95, 64), baseM, 0, 0.475, 0);
+  base.add(baseBody);
+  base.add(mesh(new THREE.CylinderGeometry(1.45, 1.45, 0.12, 64), dark, 0, 0.99, 0));
+  ringMat = new THREE.MeshStandardMaterial({ color: 0x111633, emissive: 0x6a7cff, emissiveIntensity: 0.8, roughness: 0.4 });
+  var ring = new THREE.Mesh(new THREE.TorusGeometry(1.78, 0.06, 16, 80), ringMat);
+  ring.rotation.x = Math.PI / 2; ring.position.y = 0.72; base.add(ring);
+  // cable out the back toward the headset
+  var cable = new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new V3(0, 0.45, -1.8), new V3(0, 0.3, -2.8), new V3(-1.2, 0.08, -3.8), new V3(-3, 0.08, -4.4)]), 40, 0.07, 10);
+  base.add(mesh(cable, dark));
+  var plug = mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.3, 20), dark, 0, 0.45, -1.8); plug.rotation.x = Math.PI / 2; base.add(plug);
+
+  // rotating part: post + arm (forward is +Z, positive pitch bends down)
+  var yawG = new THREE.Group(); yawG.position.y = 1.05; scene.add(yawG);
+  var postTop = 3.6, shY = postTop - 1.05;
+  yawG.add(limb(new V3(0, 0, 0), new V3(0, shY, 0), 0.34, grey));
+  yawG.add(mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.22, 40), dark, 0, 0.55, 0));
+  yawG.add(mesh(new THREE.BoxGeometry(0.1, 0.9, 0.12), teal, 0, 1.2, 0.35));
+  var postLabel = new THREE.Object3D(); postLabel.position.set(0, 1.2, 0); yawG.add(postLabel);
+  yawG.add(mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.9, 40), grey, 0, shY, 0));
+  var shoulderG = new THREE.Group(); shoulderG.position.set(0, shY + 0.05, 0); yawG.add(shoulderG);
+  shoulderG.add(ball(0.5, new V3(0, 0, 0), grey));
+  shoulderG.add(limb(new V3(0, 0, 0), new V3(0, 0, 3.3), 0.42, grey));
+  var elbowG = new THREE.Group(); elbowG.position.set(0, 0, 3.3); shoulderG.add(elbowG);
+  elbowG.add(ball(0.55, new V3(0, 0, 0), joint));
+  elbowG.add(limb(new V3(0, 0, 0), new V3(0, 0, 2.8), 0.36, grey));
+  var wristG = new THREE.Group(); wristG.position.set(0, 0, 2.8); elbowG.add(wristG);
+  wristG.add(ball(0.4, new V3(0, 0, 0), joint));
+  var hand = new THREE.Group(); hand.rotation.x = -Math.PI / 2; wristG.add(hand);   // hand axis is local -Y, palm side is local -Z
+
+  var nailM = M(0xe9dcd8, 0.35, 0.05);
+  hand.add(mesh(new THREE.CylinderGeometry(0.4, 0.42, 0.3, 32), dark, 0, -0.15, 0));
+  var palm = mesh(new THREE.SphereGeometry(1, 32, 20), skin, 0, -0.5, 0); palm.scale.set(0.68, 0.5, 0.22); hand.add(palm);
+  hand.add(mesh(new THREE.BoxGeometry(1.0, 0.6, 0.3), skin, 0, -0.5, 0));
+  // builds a jointed finger: returns its joint groups [knuckle, middle, tip]
+  function finger(parent, x, y, z, ls, rs) {
+    var g = new THREE.Group(); g.position.set(x, y, z); parent.add(g);
+    g.add(ball(0.11, new V3(0, 0, 0), joint));
+    var joints = [g], cur = g;
+    ls.forEach(function (l, i) {
+      cur.add(mesh(new THREE.CylinderGeometry(rs[i], rs[i + 1], l, 20), skin, 0, -l / 2, 0));
+      if (i < ls.length - 1) {
+        var n = new THREE.Group(); n.position.set(0, -l, 0); cur.add(n);
+        n.add(ball(rs[i + 1] * 1.18, new V3(0, 0, 0), joint));
+        joints.push(n); cur = n;
+      } else {
+        cur.add(ball(rs[i + 1], new V3(0, -l, 0), skin));
+        cur.add(mesh(new THREE.BoxGeometry(rs[i + 1] * 1.3, l * 0.6, 0.03), nailM, 0, -l * 0.55, rs[i + 1] * 0.85));
+      }
+    });
+    return joints;
+  }
+  var fingers = [
+    finger(hand, -0.45, -0.9, 0, [0.5, 0.4, 0.3], [0.095, 0.085, 0.075, 0.065]),
+    finger(hand, -0.15, -0.92, 0, [0.58, 0.45, 0.32], [0.1, 0.09, 0.08, 0.068]),
+    finger(hand, 0.15, -0.92, 0, [0.55, 0.43, 0.3], [0.1, 0.09, 0.078, 0.066]),
+    finger(hand, 0.45, -0.9, 0, [0.45, 0.35, 0.26], [0.09, 0.08, 0.07, 0.06])
+  ];
+  var thumbBase = new THREE.Group(); thumbBase.position.set(0.55, -0.35, -0.08); thumbBase.rotation.z = 0.75; hand.add(thumbBase);
+  var thumb = finger(thumbBase, 0, 0, 0, [0.5, 0.4, 0.3], [0.115, 0.1, 0.088, 0.075]);
+  function setFingers(k, j1, j2) {
+    fingers.forEach(function (f) { f[0].rotation.x = k; f[1].rotation.x = j1; f[2].rotation.x = j2; });
+    thumb[0].rotation.x = 0.3 + k * 0.6; thumb[1].rotation.x = j1 * 0.7; thumb[2].rotation.x = j2 * 0.8;
+  }
+  function setPose(s, e, w) { shoulderG.rotation.x = s; elbowG.rotation.x = e; wristG.rotation.x = w; }
+  var anchor = new THREE.Object3D(); anchor.position.set(0, -0.65, -0.82); hand.add(anchor);   // where a held ball sits
+
+  // future-tab ball and motion
+  var BALL_R = 0.6;
+  var ballM = mesh(new THREE.SphereGeometry(BALL_R, 40, 28), M(0xff8a3d, 0.35, 0.05), 0, BALL_R, 5);
+  ballM.visible = false; scene.add(ballM);
+  var REACH = rad(58);
+  var floorBall = new V3();
+  function computeBall() { setPose(0, REACH, -REACH); setFingers(-0.05, 0, 0); yawG.rotation.y = side * SWING; scene.updateMatrixWorld(true); anchor.getWorldPosition(floorBall); floorBall.y = Math.max(floorBall.y, BALL_R); }
+  computeBall();
+  function ease(x) { x = Math.max(0, Math.min(1, x)); return x * x * (3 - 2 * x); }
+  function sg(t, a, b) { return ease((t - a) / (b - a)); }
+  function futurePose(t) {
+    var e = REACH * sg(t, 3.4, 6.0) - rad(38) * sg(t, 8.8, 10.8);
+    setPose(0, e, -e);
+    var c = sg(t, 6.6, 8.4);
+    setFingers(-0.05 + 0.65 * c, 0.8 * c, 0.6 * c);
+  }
+
+  // ---- camera ----
+  var target = new V3(0, 2.3, 2.0);
+  var views = { iso: { az: 0.75, pol: 1.15, rad: 17 }, sketch: { az: Math.PI / 2 + 0.05, pol: 1.45, rad: 17 }, front: { az: 0.0, pol: 1.4, rad: 17 }, top: { az: 0, pol: 0.08, rad: 17 } };
+  var goal = { az: views.iso.az, pol: views.iso.pol, rad: views.iso.rad }, cam = { az: goal.az, pol: goal.pol, rad: goal.rad };
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function setView(n) {
+    var v = views[n], a = v.az;
+    while (a - cam.az > Math.PI) a -= 2 * Math.PI;
+    while (a - cam.az < -Math.PI) a += 2 * Math.PI;
+    goal.az = a; goal.pol = v.pol; goal.rad = v.rad;
+    document.querySelectorAll('[data-view]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-view') === n ? 'true' : 'false'); });
+  }
+  document.querySelectorAll('[data-view]').forEach(function (b) { b.addEventListener('click', function () { setView(b.getAttribute('data-view')); }); });
+  // camera sits on +Z side at az=0: x = sin... use x = sin(az)*r, z = cos(az)*r
+  function place() {
+    var sp = Math.sin(cam.pol);
+    camera.position.set(target.x + cam.rad * sp * Math.sin(cam.az), target.y + cam.rad * Math.cos(cam.pol), target.z + cam.rad * sp * Math.cos(cam.az));
+    camera.lookAt(target);
+  }
+  var ptr = new Map(), lastD = 0;
+  cv.addEventListener('pointerdown', function (e) { cv.setPointerCapture(e.pointerId); ptr.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (ptr.size === 2) { var p = Array.from(ptr.values()); lastD = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y); } });
+  cv.addEventListener('pointermove', function (e) {
+    var p = ptr.get(e.pointerId); if (!p) return;
+    var dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
+    if (ptr.size === 1) { goal.az -= dx * 0.008; goal.pol = clamp(goal.pol - dy * 0.008, 0.05, 1.7); }
+    else if (ptr.size === 2) { var q = Array.from(ptr.values()), d = Math.hypot(q[0].x - q[1].x, q[0].y - q[1].y); if (lastD > 0 && d > 0) goal.rad = clamp(goal.rad * lastD / d, 5, 32); lastD = d; }
+  });
+  function endP(e) { ptr.delete(e.pointerId); if (ptr.size < 2) lastD = 0; }
+  cv.addEventListener('pointerup', endP); cv.addEventListener('pointercancel', endP);
+  cv.addEventListener('wheel', function (e) { e.preventDefault(); goal.rad = clamp(goal.rad * Math.exp(e.deltaY * 0.001), 5, 32); }, { passive: false });
+  cv.addEventListener('dblclick', function () { setView('iso'); });
+  cv.addEventListener('keydown', function (e) {
+    var k = e.key, u = true;
+    if (k === 'ArrowLeft') goal.az -= 0.1; else if (k === 'ArrowRight') goal.az += 0.1;
+    else if (k === 'ArrowUp') goal.pol = clamp(goal.pol - 0.08, 0.05, 1.7); else if (k === 'ArrowDown') goal.pol = clamp(goal.pol + 0.08, 0.05, 1.7);
+    else if (k === '+' || k === '=') goal.rad = clamp(goal.rad * 0.9, 5, 32); else if (k === '-') goal.rad = clamp(goal.rad * 1.1, 5, 32); else u = false;
+    if (u) e.preventDefault();
+  });
+
+  // labels
+  var labelsOn = stage.clientWidth > 700;
+  $('lbl').setAttribute('aria-pressed', labelsOn);
+  $('lbl').addEventListener('click', function () { labelsOn = !labelsOn; $('lbl').setAttribute('aria-pressed', labelsOn); });
+  function pt(parent, x, y, z) { var o = new THREE.Object3D(); o.position.set(x, y, z); parent.add(o); return o; }
+  var labelDefs = [['Confidence check software (in base)', baseBody, 'demo'], ['Rotating post: swings left / right', postLabel, 'demo'],
+    ['Robotic arm', pt(shoulderG, 0, 0.4, 1.7), 'both'], ['Shoulder', shoulderG, 'future'], ['Elbow', elbowG, 'both'], ['Wrist', wristG, 'future'],
+    ['Finger joints', pt(hand, 0, -1.55, 0.1), 'both']];
+  var labels = labelDefs.map(function (d) {
+    var el = document.createElement('div'); el.className = 'tag'; el.textContent = d[0]; stage.appendChild(el); return { el: el, obj: d[1], mode: d[2] };
+  });
+
+  var W = 1, H = 1;
+  function resize() { W = Math.max(view.clientWidth, 1); H = Math.max(view.clientHeight, 1); renderer.setSize(W, H); camera.aspect = W / H; camera.fov = W / H < 0.9 ? 52 : 36; camera.updateProjectionMatrix(); }
+  if (window.ResizeObserver) new ResizeObserver(resize).observe(view); else window.addEventListener('resize', resize);
+  resize();
+
+  var last = performance.now(), v3 = new V3();
+  function frame(now) {
+    requestAnimationFrame(frame);
+    var dt = Math.min((now - last) / 1000, 0.05); last = now;
+    var k = 1 - Math.exp(-dt * 9);
+    cam.az += (goal.az - cam.az) * k; cam.pol += (goal.pol - cam.pol) * k; cam.rad += (goal.rad - cam.rad) * k;
+    place();
+    var d = yawTarget - yaw;
+    if (Math.abs(d) > 1e-4) { var sp = Math.min(rad(45), Math.abs(d) * 3 + rad(5)); yaw += Math.sign(d) * Math.min(Math.abs(d), sp * dt); }
+    yawG.rotation.y = mode === 'future' ? side * SWING * sg(fT, 1.2, 3.2) : yaw;
+    if (mode === 'future') {
+      if (playing) { fT += dt; if (fT >= DUR) { fT = DUR; playing = false; syncPlay(); } $('scrub').value = Math.round(fT * 100); }
+      futurePose(fT);
+      var si = fT < 1.2 ? 0 : (fT < 3.4 ? 1 : (fT < 6.6 ? 2 : (fT < 8.8 ? 3 : 4)));
+      var lis = $('steps').children;
+      for (var q = 0; q < lis.length; q++) lis[q].className = q === si ? 'on' : '';
+      scene.updateMatrixWorld(true);
+      if (fT >= 6.2) anchor.getWorldPosition(ballM.position); else ballM.position.copy(floorBall);
+      ballM.visible = true;
+    } else {
+      setPose(rad(6), rad(36), rad(13)); setFingers(0.25, 0.35, 0.3); ballM.visible = false;
+    }
+    if (state === 'run' && Math.abs(yawTarget - yaw) < rad(0.4)) {
+      setLed('ready');
+      $('tArm').textContent = (yawTarget < 0 ? 'Moved left' : 'Moved right');
+    }
+    var t = now / 1000, e = 0.8;
+    if (state === 'confirm') e = 0.5 + 0.5 * Math.sin(t * 5); else if (state === 'run') e = 1.1; else if (state === 'hold') e = 0.35;
+    ringMat.emissiveIntensity = e;
+    labels.forEach(function (L) {
+      L.obj.getWorldPosition(v3); v3.project(camera);
+      L.el.style.display = (labelsOn && v3.z < 1 && (L.mode === 'both' || L.mode === mode)) ? 'block' : 'none';
+      L.el.style.transform = 'translate(' + ((v3.x * 0.5 + 0.5) * W) + 'px,' + ((-v3.y * 0.5 + 0.5) * H) + 'px)';
+    });
+    renderer.render(scene, camera);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+<script>
+(function () {
+  function send() {
+    try { parent.postMessage({ type: 'mtm-height', h: document.body.offsetHeight }, location.origin); } catch (e) {}
+  }
+  window.addEventListener('load', send);
+  window.addEventListener('resize', send);
+  if (window.ResizeObserver) new ResizeObserver(send).observe(document.body);
+})();
+</script>

@@ -1,0 +1,6 @@
+.results__table-card, .results__limits { margin-top: 1.25rem; }
+.results__scroll { overflow-x: auto; margin-top: 0.75rem; }
+.results__table { width: 100%; border-collapse: collapse; min-width: 560px; font-size: 0.95rem; }
+.results__table th, .results__table td { text-align: left; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); }
+.results__table th { color: var(--text-muted); font-weight: 500; font-size: 0.85rem; }
+.results__limits ul { color: var(--text-muted); line-height: 1.7; padding-left: 1.2rem; margin: 0.75rem 0 0; display: grid; gap: 0.5rem; }

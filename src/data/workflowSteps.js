@@ -10,9 +10,10 @@ export const stops = [
       'We start from prerecorded EEG of volunteers who imagined moving their left or right hand.',
     details: [
       'Source: PhysioNet EEG Motor Movement/Imagery Dataset, runs 4, 8 and 12.',
-      '109 participants and 4,918 labelled left- and right-hand imagery trials.',
+      'Participants S001 to S035 train, calibrate and test the model. Each person appears in only one group.',
+      'That gives 1,575 labelled left- and right-hand imagery trials.',
+      'An external test uses BCI Competition IV 2a: 9 participants and 1,163 trials.',
       'We use existing recordings and collect no new EEG from anyone.',
-      'We plan to test on a second public dataset, BCI Competition IV 2a, to check generalization.',
     ],
   },
   {
@@ -39,13 +40,14 @@ export const stops = [
     title: 'Preprocessing',
     status: 'Completed',
     summary:
-      'We clean the recordings and cut them into two-second segments the model can compare.',
+      'We cut the recordings into two-second segments from three electrodes over the motor cortex.',
     details: [
       'A band-pass filter keeps activity between 8 and 30 Hz.',
       'Epochs run from 1 to 3 seconds after each event marker.',
-      'Every recording ends at 128 Hz, giving 64 channels and 257 samples per epoch.',
+      'The model reads three electrodes, C3, Cz and C4, sampled at 160 Hz.',
+      'We screen out epochs with missing, truncated, flat or extreme values.',
     ],
-    note: 'We applied no amplitude-based artifact rejection. Our checks for NaN and infinite values confirm structure and numbers. They do not show that the trials are free of artifacts.',
+    note: 'We also prepared a separate export of all 109 participants (64 channels, 128 Hz). The model did not train on that export.',
   },
   {
     id: 'csp',
@@ -53,12 +55,12 @@ export const stops = [
     number: 3,
     short: 'CSP',
     title: 'Common Spatial Patterns (CSP)',
-    status: 'In development',
+    status: 'Completed',
     summary:
       'CSP finds the scalp patterns that best separate left-hand from right-hand imagery.',
     details: [
-      'CSP turns the filtered epochs into a small set of spatial features.',
-      'We fit CSP on training data inside each evaluation fold. This prevents data leakage.',
+      'CSP turns the filtered epochs into two spatial features.',
+      'We fit CSP on training participants only. This prevents data leakage.',
     ],
     why: 'Imagining a hand movement lowers power in the mu rhythm (about 8 to 12 Hz) over the motor cortex. The drop is usually strongest on the opposite side of the head. CSP picks up this difference. It does not read thoughts.',
   },
@@ -68,12 +70,13 @@ export const stops = [
     number: 4,
     short: 'Classifier',
     title: 'Classification',
-    status: 'In development',
+    status: 'Completed',
     summary: 'A classifier reads the CSP features and predicts LEFT or RIGHT.',
     details: [
-      'LDA (Linear Discriminant Analysis) is our first classifier.',
-      'If time permits, we compare it with Logistic Regression and SVM (Support Vector Machine).',
-      'We evaluate on held-out data, aiming for participants the model never saw during training.',
+      'We compared shrinkage LDA, linear SVM and logistic regression.',
+      'Linear SVM ranked first on validation, so we chose it.',
+      'On validation participants it reached 50.6% balanced accuracy, close to chance.',
+      'We test on participants the model never saw during training.',
     ],
   },
   {
@@ -82,11 +85,11 @@ export const stops = [
     number: 5,
     short: 'Confidence',
     title: 'Confidence estimation',
-    status: 'In development',
+    status: 'Completed',
     summary: 'Each prediction carries a probability that shows how sure the model is.',
     details: [
-      'We calibrate the predicted probabilities on validation data.',
-      'Training, calibration and test data stay separate.',
+      'We calibrated the SVM scores into probabilities on five separate participants.',
+      'On validation and on the PhysioNet test, the probabilities were no better than a constant 50% guess.',
       'A high probability does not guarantee a correct prediction.',
     ],
   },
@@ -96,23 +99,24 @@ export const stops = [
     number: 6,
     short: 'Decision gate',
     title: 'MTM decision gate',
-    status: 'Simulated in demo',
+    status: 'Completed',
     summary:
       'The gate compares each confidence value with two thresholds and picks one of three outcomes.',
     details: [
       'The gate holds a command back or asks for confirmation. It does not replace a prediction with a different action.',
+      'On 225 held-out PhysioNet trials, the gate rejected 224 and asked for confirmation once. It never executed a command automatically.',
     ],
     outcomes: [
       { tone: 'success', rule: '98% or higher', label: 'Execute', text: 'The command runs and the arm moves.' },
       {
         tone: 'warning',
-        rule: '90% to below 98%',
+        rule: '91% to below 98%',
         label: 'Confirm',
         text: 'The system asks the user to confirm. A yes runs the displayed command. A no, or no response, keeps the arm still.',
       },
-      { tone: 'danger', rule: 'Below 90%', label: 'Reject', text: 'The command does not run and the arm stays still.' },
+      { tone: 'danger', rule: 'Below 91%', label: 'Reject', text: 'The command does not run and the arm stays still.' },
     ],
-    note: 'These thresholds are experimental starting points, not established safety limits. We choose final values using validation data, never the test set.',
+    note: 'These thresholds are experimental starting points, not established safety limits. We fixed them before scoring the test participants.',
   },
   {
     id: 'arm',

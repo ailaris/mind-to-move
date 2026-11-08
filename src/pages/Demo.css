@@ -5,6 +5,7 @@
 }
 .demo__banner strong { color: var(--warning); }
 
+.demo-frame { display: block; width: 100%; border: 0; background: transparent; }
 .demo { display: grid; grid-template-columns: 340px 1fr; gap: 1.25rem; align-items: start; }
 .demo .card:hover { transform: none; border-color: var(--border); }
 .demo__stage { display: grid; gap: 1.5rem; }

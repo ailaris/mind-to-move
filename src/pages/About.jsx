@@ -5,6 +5,7 @@ import banner from '../assets/banner.png'
 import './About.css'
 import InteractiveWorkflow from '../components/InteractiveWorkflow'
 import workflow from '../assets/workflow.jpeg'
+import ResultsSection from '../components/ResultsSection'
 
 const stats = [
   { value: '109', label: 'Participants' },
@@ -188,6 +189,11 @@ export default function About() {
               Motor Movement/Imagery Dataset.
             </p>
           </SectionHeading>
+          <p style={{ marginTop: '1rem' }}>
+            This section describes the 109-participant export we prepared. The model in the
+            Results section trained on a separate pipeline with 35 participants and three
+            electrodes. It did not use this export.
+          </p>
 
           <div className="stats">
             {stats.map((s) => (
@@ -271,7 +277,7 @@ export default function About() {
           <InteractiveWorkflow diagramSrc={workflow} />
         </div>
       </section>
-
+      <ResultsSection />
       {/* ---------- G. EXPERTS ---------- */}
       <section className="section">
         <div className="container">

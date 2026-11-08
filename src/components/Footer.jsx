@@ -33,6 +33,9 @@ export default function Footer() {
           and is not intended for diagnosis, treatment, or independent real-world
           assistive control.
         </p>
+        <p className="footer__small">
+          External test data: BCI Competition IV dataset 2a (Tangermann et al., 2012, Frontiers in Neuroscience, 6:55).
+        </p>
       </div>
     </footer>
   )
