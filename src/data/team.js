@@ -2,7 +2,7 @@ import photo1 from '../assets/team/member1.jpg'
 //import photo2 from '../assets/team/member2.jpg'
 import photo3 from '../assets/team/member3.jpeg'
 import photo4 from '../assets/team/member4.jpeg'
-//import photo5 from '../assets/team/member5.jpg'
+import photo5 from '../assets/team/hasti.jpeg'
 
 export const team = [
   {
@@ -38,6 +38,6 @@ export const team = [
     role: 'Security and community research',
     area: 'Privacy, real-life use and feedback',
     bio: 'Researched who could use Mind to Move and how, wrote the privacy and cybersecurity analysis, and gathered feedback through interviews.',
-    photo: null,
+    photo: photo5,
   },
 ]

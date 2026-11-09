@@ -36,4 +36,4 @@ dist-ssr
 *.npy
 *.npz
 *.pkl
-data/
+/data/
