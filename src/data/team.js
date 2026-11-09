@@ -2,7 +2,7 @@ import photo1 from '../assets/team/member1.jpg'
 //import photo2 from '../assets/team/member2.jpg'
 import photo3 from '../assets/team/member3.jpeg'
 import photo4 from '../assets/team/member4.jpeg'
-import photo5 from '../assets/team/hasti.jpeg'
+import photo5 from '../assets/team/member5.jpeg'
 
 export const team = [
   {

@@ -1,18 +1,21 @@
-// Use real information only. Do not invent names, titles or quotes.
-// Set approved: true only after the person has agreed to appear on the site.
 // youtubeId: the 11 characters after youtu.be/ or after watch?v=
+
+// After you save the photo in src/assets/ (compress it first), remove the // below:
+import cevizPhoto from '../assets/ceviz.jpeg'
+
 export const perspectives = [
   {
-    id: 'expert',
-    approved: true, // set to true after she agrees
+    id: 'expert-ertan',
+    approved: true,
     kind: 'Expert interview',
     name: 'Dr. Melek Ertan',
-    title: 'Nörolog Doktor',
-    intro: 'We interviewed her in Turkish and translated her answers.',
+    title: 'Neurologist, Eskişehir, Türkiye',
+    intro:
+      'Dr. Ertan is a neurologist whose areas of practice include EEG, epilepsy and paralysis. We interviewed her in Turkish and translated her answers.',
     note: 'Interview held in Turkish. Translated into English by our team.',
     qa: [
       {
-        q: '[Exact question you asked about her view of the project]',
+        q: 'We would like to hear your general thoughts about our project.', // type the exact question you asked, or leave empty to show only her answer
         a: 'It is a very good project. There are many more people who need this kind of project. As average life expectancy increases, the number of people experiencing these kinds of problems also increases. It is a project that could greatly improve quality of life.',
       },
       {
@@ -25,33 +28,27 @@ export const perspectives = [
     photoAlt: '',
   },
   {
-    id: 'expert',
-    approved: true, // set to true after she agrees
+    id: 'expert-ceviz',
+    approved: true, 
     kind: 'Expert interview',
     name: 'Dr. Aytekin Ceviz',
-    title: '[Role and institution, as she approved]',
-    intro: 'We interviewed him in Turkish and translated his answers.',
+    title: 'Neurologist, Eskişehir, Türkiye',
+    intro:
+      'Dr. Ceviz is a neurologist whose areas of practice include epilepsy, headache and multiple sclerosis. We interviewed him in Turkish and translated his answers.',
     note: 'Interview held in Turkish. Translated into English by our team.',
     qa: [
-      {
-        q: '---',
-        a: '-------------',
-      },
-      {
-        q: '----?',
-        a: '-----------------',
-      },
+      // { q: 'Exact question', a: 'His exact answer, translated.' },
     ],
     youtubeId: '',
-    photo: null,
-    photoAlt: '',
+    photo: cevizPhoto, 
+    photoAlt: 'Dr. Aytekin Ceviz with a member of our team',
   },
   {
     id: 'student',
-    approved: false, // set to true after he agrees
+    approved: true,
     kind: 'Community feedback',
-    name: 'Çağrı Altın',
-    title: 'a high school student',
+    name: 'Çağrı Altın', 
+    title: 'A high school student',
     intro: 'We asked a student from outside our team for his view of the project.',
     note: 'Interview held in Turkish. Translated into English by our team.',
     qa: [
