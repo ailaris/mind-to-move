@@ -39,13 +39,15 @@ export default function Perspectives() {
               <h3>{p.name}</h3>
               {p.title && <p className="persp__title">{p.title}</p>}
               <p>{p.intro}</p>
+
               {p.qa.map((item) => (
-                <div key={item.q}>
-                    <p className="persp__q">{item.q}</p>
-                    <blockquote>{item.a}</blockquote>
+                <div key={item.a}>
+                  {item.q && <p className="persp__q">{item.q}</p>}
+                  <blockquote>{item.a}</blockquote>
                 </div>
-                ))}
-               {p.note && <p className="persp__note">{p.note}</p>}
+              ))}
+
+              {p.note && <p className="persp__note">{p.note}</p>}
             </article>
           ))}
         </div>
