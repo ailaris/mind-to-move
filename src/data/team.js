@@ -1,5 +1,5 @@
 import photo1 from '../assets/team/member1.jpg'
-//import photo2 from '../assets/team/member2.jpg'
+import photo2 from '../assets/team/member2.jpg'
 import photo3 from '../assets/team/member3.jpeg'
 import photo4 from '../assets/team/member4.jpeg'
 import photo5 from '../assets/team/member5.jpeg'
@@ -17,7 +17,7 @@ export const team = [
     role: 'Workflow and systems',
     area: 'System workflow and datasets',
     bio: 'Mapped how Mind to Move works from EEG input to the virtual arm and prepared the workflow diagram. Prepared the second dataset and shaped how the website explains the system.',
-    photo: null,
+    photo: photo2,
   },
   {
     name: 'Shugyla',
