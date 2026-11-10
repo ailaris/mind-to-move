@@ -8,7 +8,7 @@ import workflow from '../assets/workflow.jpeg'
 import ResultsSection from '../components/ResultsSection'
 import Perspectives from '../components/Perspectives'
 import GateSlider from '../components/GateSlider'
-
+const motivationPhoto = null
 const benefitIcons = {
   person: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
