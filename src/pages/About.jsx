@@ -6,12 +6,27 @@ import './About.css'
 import InteractiveWorkflow from '../components/InteractiveWorkflow'
 import workflow from '../assets/workflow.jpeg'
 import ResultsSection from '../components/ResultsSection'
-import GateScale from '../components/GateScale'
 import Perspectives from '../components/Perspectives'
 import GateSlider from '../components/GateSlider'
-// When you have the photo: save it in src/assets/, import it, and assign it here.
-// import teamWorking from '../assets/team-working.jpg'
-const motivationPhoto = null
+
+const benefitIcons = {
+  person: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" />
+    </svg>
+  ),
+  heart: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21.2l7.8-7.7 1-1.1a5.5 5.5 0 0 0 0-7.8z" />
+    </svg>
+  ),
+  signal: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+    </svg>
+  ),
+}
 const stats = [
   { value: '109', label: 'Participants' },
   { value: '4,918', label: 'EEG epochs' },
@@ -85,49 +100,31 @@ export default function About() {
         </div>
       </section>
 
-      {/* ---------- C. PROBLEM & MOTIVATION ---------- */}
+      
+      {/* PROBLEM & MOTIVATION */}
       <section className="section">
         <div className="container">
-          <div className="why">
-            <SectionHeading label="Why" title="When should a system choose not to act?">
-              <p>
-                Brain-computer interfaces use patterns of brain activity to interpret a
-                person's intended movement. However, EEG signals are naturally noisy and
-                can vary considerably between individuals. As a result, machine-learning
-                models may sometimes misinterpret an imagined movement and produce an
-                incorrect command.
-              </p>
-              <p style={{ marginTop: '1rem' }}>
-                In assistive technology, an incorrect command can be more problematic
-                than receiving no command at all. A robotic device that acts on every
-                prediction could respond when the user's actual intention is unclear.
-              </p>
-              <p style={{ marginTop: '1rem' }}>
-                Mind to Move introduces a confidence-aware approach. Instead of
-                automatically executing every prediction, the system evaluates the
-                model's confidence before allowing an action. Depending on the
-                prediction's confidence, it can execute the command, request
-                confirmation, or reject it. We aim to investigate whether this approach
-                can reduce incorrect robotic commands compared with a system that
-                accepts every prediction.
-              </p>
-              <p style={{ marginTop: '1rem' }}>
-                Our first results show the gate in action. It blocked every wrong command
-                in our test and also held back nearly all correct ones. See the{' '}
-                <a href="#results" style={{ textDecoration: 'underline' }}>Results</a> section.
-              </p>
-              <p style={{ marginTop: '1.5rem', fontWeight: 600 }}>Our research question:</p>
-              <p>
-                Can allowing an EEG-based system to reject uncertain predictions reduce
-                incorrect robotic commands?
-              </p>
-            </SectionHeading>
-            <GateSlider />
+          <SectionHeading label="Why" title="When should a system choose not to act?">
+            <p>
+              EEG signals are noisy and differ from person to person, so a model can
+              misread an imagined movement. In assistive technology, a wrong command can
+              cost more than no command. A robotic arm that acts on every prediction may
+              move when the user's intention is unclear.
+            </p>
+            <p style={{ marginTop: '1rem' }}>
+              Mind to Move adds a confidence gate. The system checks how sure the model
+              is, then executes the command, asks for confirmation or rejects it. Drag
+              the slider to see how. To see what the gate did on real test data, read
+              the <a href="#results" style={{ textDecoration: 'underline' }}>Results</a>.
+            </p>
+            <p style={{ marginTop: '1.5rem', fontWeight: 600 }}>Our research question:</p>
+            <p>
+              Can allowing an EEG-based system to reject uncertain predictions reduce
+              incorrect robotic commands?
+            </p>
+          </SectionHeading>
 
-            <aside className="why__side">
-              <GateScale />
-            </aside>
-          </div>
+          <GateSlider />
 
           <div className={`card motivation ${motivationPhoto ? '' : 'motivation--text'}`}>
             {motivationPhoto && (
@@ -138,61 +135,49 @@ export default function About() {
             <div>
               <h3>Our motivation</h3>
               <p>
-                We chose this direction after comparing several BrainTech ideas. A
-                motor imagery BCI offered a focused research question that we could
-                investigate using publicly available EEG recordings and a virtual
-                demonstration, without collecting neural data or building physical
-                hardware. We narrowed our concept to two imagined movements and one
-                important challenge: determining when a prediction is reliable enough to
-                trigger an action.
+                We chose this direction after comparing several BrainTech ideas. A motor
+                imagery BCI let us ask one focused question with public EEG recordings
+                and a virtual demo, with no neural data collection and no hardware. We
+                narrowed the concept to two imagined movements and one challenge:
+                deciding when a prediction is reliable enough to act on.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ---------- D. WHO COULD BENEFIT ---------- */}
+      {/* WHO COULD BENEFIT */}
       <section className="section">
         <div className="container">
           <SectionHeading label="Impact" title="Who could this research matter to?">
             <p>
-              Mind to Move explores a potential alternative interaction method for 
-              people with significant limitations in arm and hand movement. Other 
-              important stakeholders include caregivers, rehabilitation specialists, 
-              and researchers working on assistive technologies. Our current prototype 
-              is a research demonstration and has not been tested with these groups.
+              Mind to Move explores a possible alternative way to interact with devices
+              for people with significant arm and hand limitations. Eye-tracking
+              computers, communication devices and caregiver help serve them today, and
+              Mind to Move would sit next to these tools.
             </p>
             <p style={{ marginTop: '1rem' }}>
-                People with limited movement use eye-tracking computers, communication
-                devices, and caregiver help today. Mind to Move would sit next to these tools.
-                People with movement limitations, caregivers, and rehabilitation specialists
-                have not yet shaped this project. 
+              People with movement limitations, caregivers and rehabilitation
+              specialists have not yet shaped this project, and we have not tested the
+              prototype with them.
             </p>
           </SectionHeading>
+
           <div className="grid-3">
-            <div className="card">
+            <div className="card benefit">
+              <div className="benefit__icon">{benefitIcons.person}</div>
               <h3>Adults with severe arm and hand limitations</h3>
-              <p>
-                Future BCI systems could offer alternative ways 
-                to interact with computers and assistive devices 
-                for people who experience significant limitations 
-                in voluntary movement.
-              </p>
+              <p>Future BCI systems could offer another way to use computers and assistive devices.</p>
             </div>
-            <div className="card">
+            <div className="card benefit">
+              <div className="benefit__icon">{benefitIcons.heart}</div>
               <h3>Caregivers and rehabilitation specialists</h3>
-              <p>
-                Their perspectives can help identify practical needs, 
-                accessibility requirements, and potential limitations 
-                of future assistive BCI systems.
-              </p>
+              <p>They can tell us about practical needs, accessibility and the limits of future systems.</p>
             </div>
-            <div className="card">
+            <div className="card benefit">
+              <div className="benefit__icon">{benefitIcons.signal}</div>
               <h3>BCI and assistive technology researchers</h3>
-              <p>
-                Our project explores confidence-aware decision-making 
-                as one approach to improving the reliability of EEG-based control systems.
-              </p>
+              <p>We explore confidence-aware decisions as one way to make EEG control more reliable.</p>
             </div>
           </div>
         </div>
