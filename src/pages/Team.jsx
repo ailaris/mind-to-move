@@ -2,9 +2,9 @@ import SectionHeading from '../components/SectionHeading'
 import { team } from '../data/team'
 import './Team.css'
 
-// To add the team photo: put it in src/assets/, import it, and assign it here:
+
 import teamPhoto from '../assets/team-pic.jpeg'
-const teamPhoto = null
+
 
 const initials = (name) =>
   name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
