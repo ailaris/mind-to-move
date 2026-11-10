@@ -8,7 +8,7 @@ import workflow from '../assets/workflow.jpeg'
 import ResultsSection from '../components/ResultsSection'
 import GateScale from '../components/GateScale'
 import Perspectives from '../components/Perspectives'
-
+import GateSlider from '../components/GateSlider'
 // When you have the photo: save it in src/assets/, import it, and assign it here.
 // import teamWorking from '../assets/team-working.jpg'
 const motivationPhoto = null
@@ -122,6 +122,7 @@ export default function About() {
                 incorrect robotic commands?
               </p>
             </SectionHeading>
+            <GateSlider />
 
             <aside className="why__side">
               <GateScale />
