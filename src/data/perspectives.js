@@ -23,7 +23,7 @@ export const perspectives = [
         a: 'These patients experience reduced physical functioning, struggle to adapt to daily life, and definitely need support. This situation also limits the life of the person who takes care of them to some extent. Therefore, I think that with a device like this, patients could regain their daily independence. Their caregivers could also return to their normal lives.',
       },
     ],
-    youtubeId: '',
+    youtubeId: '4i_aI9qZm3E',
     photo: null,
     photoAlt: '',
   },
